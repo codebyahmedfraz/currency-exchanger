@@ -1,0 +1,12 @@
+<div fxLayout="column" class="component-container">
+    <div fxLayout="row" fxLayoutAlign="space-between center">
+        <h1>EUR - European Union Euro</h1>
+        <button mat-raised-button color="primary" [routerLink]="'/home'" >Back to Home</button>
+    </div>
+    <div>
+        <app-currency-converter-form [context] = "'details'"></app-currency-converter-form>
+    </div>
+    <div>
+        <app-historical-data-chart></app-historical-data-chart>
+    </div>
+</div>

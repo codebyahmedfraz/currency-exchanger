@@ -10,6 +10,7 @@ import { LayoutComponent } from '@fuse/components/layout/layout.component';
 import { HeaderComponent } from '@fuse/components/layout/header/header.component';
 import { ErrorComponent } from '@fuse/components/error/error.component';
 import { RouterModule } from '@angular/router';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -25,12 +26,16 @@ import { RouterModule } from '@angular/router';
     CommonModule,
     MaterialModule,
     FlexLayoutModule,
-    RouterModule
+    RouterModule,
+    ReactiveFormsModule,
+    FormsModule,
   ],
   exports: [
     MaterialModule,
     FlexLayoutModule,
     RouterModule,
+    ReactiveFormsModule,
+    FormsModule,
     ConverteredAmountCardComponent,
     CurrencyConverterFormComponent,
     HistoricalDataChartComponent,

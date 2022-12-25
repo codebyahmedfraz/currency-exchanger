@@ -1,3 +1,9 @@
-app-header {
-    width: 100%;
+.app-toolbar {
+    position: fixed;
+    position: -webkit-fixed;
+    top: 0;
+    z-index: 1000;
+    app-header {
+        width: 100%;
+    }
 }

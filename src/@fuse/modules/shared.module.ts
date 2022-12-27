@@ -12,6 +12,8 @@ import { ErrorComponent } from '@fuse/components/error/error.component';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
+import { HttpClientModule } from '@angular/common/http';
+
 
 @NgModule({
   declarations: [
@@ -29,6 +31,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
     RouterModule,
     ReactiveFormsModule,
     FormsModule,
+    HttpClientModule,
   ],
   exports: [
     MaterialModule,
@@ -36,6 +39,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
     RouterModule,
     ReactiveFormsModule,
     FormsModule,
+    HttpClientModule,
     ConverteredAmountCardComponent,
     CurrencyConverterFormComponent,
     HistoricalDataChartComponent,

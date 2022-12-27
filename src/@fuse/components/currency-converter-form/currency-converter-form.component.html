@@ -8,11 +8,9 @@
                 <span class="pre-fix" matTextPrefix>$&nbsp;</span>
             </mat-form-field>
         </div>
-        <div style="opacity: 0;
-        height: 37px;
-        margin-bottom: 20px;">x</div>
+        <div class="separator">-</div>
         <div fxFlex fxLayoutAlign="center center">
-            <p>1.00 EUR = xx.xx USD</p>
+            <p ><span>1.00</span> {{from?.value}} = <span *ngIf="!conversionInfo">xx.xx</span><span *ngIf="conversionInfo">{{conversionInfo?.rate | number: '0.2-2'}}</span> {{to?.value}}</p>
         </div>
     </div>
     <div fxFlex="60" fxLayout="column">
@@ -20,36 +18,36 @@
             <div fxFlex>
                 <mat-form-field appearance="fill" fxFlex>
                     <mat-label>From</mat-label>
-                    <mat-select formControlName="from" [disabled]="!isValidAmount">
-                      <mat-option value="primary">Primary</mat-option>
-                      <mat-option value="accent">Accent</mat-option>
-                      <mat-option value="warn">Warn</mat-option>
+                    <mat-select formControlName="from" [disabled]="!amount.valid">
+                        <mat-option *ngFor="let item of symbolsList | keyvalue" [value]="item.key">
+                            {{item.value}}
+                        </mat-option>
                     </mat-select>
                   </mat-form-field>
             </div>
             <div>
-                <mat-icon>swap_horiz</mat-icon>
+                <mat-icon (click)="swapCurrencies()" [ngStyle]="{'opacity': amount.valid ? 1 : 0.5}">swap_horiz</mat-icon>
             </div>
             <div fxFlex>
                 <mat-form-field appearance="fill" fxFlex>
                     <mat-label>To</mat-label>
-                    <mat-select formControlName="to" [disabled]="!isValidAmount">
-                      <mat-option value="primary">Primary</mat-option>
-                      <mat-option value="accent">Accent</mat-option>
-                      <mat-option value="warn">Warn</mat-option>
+                    <mat-select formControlName="to" [disabled]="!amount.valid">
+                        <mat-option *ngFor="let item of symbolsList | keyvalue" [value]="item.key">
+                            {{item.value}}
+                        </mat-option>
                     </mat-select>
                   </mat-form-field>
             </div>
         </div>
         <div style="margin-bottom:20px">
-            <button fxFlex mat-raised-button color="primary" (click)="convert()" [disabled]="!isValidAmount">Convert</button>
+            <button fxFlex mat-raised-button color="primary" (click)="convert()" [disabled]="!exchangeForm.valid">Convert</button>
         </div>
         <div fxFlex fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="20px">
             <div class="result-card" fxFlex fxLayoutAlign="center center">
-                <h2>xx.xx USD</h2>
+                <h2>{{(conversion?.result ? conversion?.result : 0) | number: '0.2-2'}} {{to?.value}}</h2>
             </div>
             <div fxFlex *ngIf="context === 'home'">
-                <button fxFlex mat-raised-button color="primary" [routerLink]="'/details/EUR/USD'" >More Details</button>
+                <button fxFlex mat-raised-button color="primary" (click)="navidateToDetails()" >More Details</button>
             </div>
         </div>
     </div>

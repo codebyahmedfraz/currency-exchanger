@@ -16,11 +16,16 @@ export class DetailsComponent implements OnInit, OnDestroy {
   constructor(private dataSharingService: DataSharingService) { }
 
   ngOnInit(): void {
-    const sub = this.dataSharingService.getExchangeFormValueChange().subscribe(formValue => {
+    const sub = this.dataSharingService.getConversionRequestSentNotification().subscribe(formValue => {
+      this.exchangeFormValue = formValue;
+      this.currencyFullName = this.dataSharingService.symbols[this.exchangeFormValue.from];
+    })
+    const sub2 = this.dataSharingService.getExchangeFormValueChange().subscribe(formValue => {
       this.exchangeFormValue = formValue;
       this.currencyFullName = this.dataSharingService.symbols[this.exchangeFormValue.from];
     })
     this.subscriptions.push(sub);
+    this.subscriptions.push(sub2);
   }
 
   ngOnDestroy() {

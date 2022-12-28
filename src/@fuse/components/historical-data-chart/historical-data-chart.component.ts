@@ -1,19 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ExchangeFormModel } from '@fuse/models/exchange-form.model';
 import { DataSharingService } from '@fuse/services/data-sharing/data-sharing.service';
 import { HttpService } from '@fuse/services/http/http.service';
 import { Chart, ChartConfiguration, ChartItem, registerables } from 'chart.js';
 import * as moment from 'moment';
-import { map } from 'rxjs';
+import { map, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-historical-data-chart',
   templateUrl: './historical-data-chart.component.html',
   styleUrls: ['./historical-data-chart.component.scss']
 })
-export class HistoricalDataChartComponent implements OnInit {
+export class HistoricalDataChartComponent implements OnInit, OnDestroy {
   exchangeFormValue: ExchangeFormModel | null = null;
   chartRef: any;
+  subscriptions: Subscription[] = [];
 
   constructor(
     private dataSharingService: DataSharingService,
@@ -21,10 +22,12 @@ export class HistoricalDataChartComponent implements OnInit {
     ) { }
 
   ngOnInit(): void {
-    this.dataSharingService.getConversionRequestSentNotification().subscribe(formValue => {
+    const sub = this.dataSharingService.getConversionRequestSentNotification().subscribe(formValue => {
       this.exchangeFormValue = formValue;
       this.fetchGraphData();
     })
+
+    this.subscriptions.push(sub);
 
     this.createChart();
 
@@ -40,7 +43,7 @@ export class HistoricalDataChartComponent implements OnInit {
         .pipe(map((resp: any) => {
           resp.result = {labels: [], data: []}
           this.listOfLastDatesOfPrev12Months.forEach(date => {
-            resp.result.labels.push(date);
+            resp.result.labels.push(moment(date, 'YYYY-MM-DD').format('MMM YYYY'));
             resp.result.data.push(Object.values(resp.rates[date])[0]);
           })
           return resp;
@@ -70,8 +73,8 @@ export class HistoricalDataChartComponent implements OnInit {
     const options = {
       scales: {
         y: {
-          beginAtZero: true,
-          display: false
+          beginAtZero: false,
+          display: true,
         }
       }
     }
@@ -83,14 +86,15 @@ export class HistoricalDataChartComponent implements OnInit {
     }
 
     const chartItem: ChartItem | any = document.getElementById('chart-canvas') as ChartItem | any;
-
-    chartItem['width'] = '100vw';
-
-    if (this.chartRef) {
-      this.chartRef.destroy();
+    if (chartItem) {
+      chartItem['width'] = '100vw';
+  
+      if (this.chartRef) {
+        this.chartRef.destroy();
+      }
+  
+      this.chartRef = new Chart(chartItem, config)
     }
-
-    this.chartRef = new Chart(chartItem, config)
   }
 
   get listOfLastDatesOfPrev12Months() {
@@ -109,6 +113,13 @@ export class HistoricalDataChartComponent implements OnInit {
     }
 
     return lastDateOfPrev12Months.reverse();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+    if (this.chartRef) {
+      this.chartRef.destroy();
+    }
   }
 
 }

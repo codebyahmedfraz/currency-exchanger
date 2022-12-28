@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Renderer2 } from '@angular/core';
+import { AfterViewInit, Component } from '@angular/core';
 import { LoaderService } from '@fuse/services/loader.service';
 @Component({
   selector: 'app-root',
@@ -7,16 +7,13 @@ import { LoaderService } from '@fuse/services/loader.service';
 })
 export class AppComponent implements AfterViewInit {
   title = 'currency-exchanger';
+  loading = false;
 
-  constructor(private loaderService: LoaderService, private renderer: Renderer2) { }
+  constructor(private loaderService: LoaderService) { }
 
   ngAfterViewInit() {
     this.loaderService.httpProgress().subscribe((status: boolean) => {
-      if (status) {
-        this.renderer.addClass(document.body, 'cursor-loader');
-      } else {
-        this.renderer.removeClass(document.body, 'cursor-loader');
-      }
+      this.loading = status;
     });
   }
 }

@@ -1,32 +1,33 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MostPopularCurrencies } from '@fuse/enum/most-popular-currencies.enum';
 import { ExchangeFormModel } from '@fuse/models/exchange-form.model';
 import { DataSharingService } from '@fuse/services/data-sharing/data-sharing.service';
 import { HttpService } from '@fuse/services/http/http.service';
-import { map } from 'rxjs';
+import { map, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
 
   exchangeFormValue: ExchangeFormModel | null = null;
   currencyFullName: string = '';
   mostPopularCurrencies = MostPopularCurrencies;
   popularCurrencies: string = '';
   rates: any = [];
+  subscriptions: Subscription[] = [];
 
   constructor(private dataSharingService: DataSharingService, private http: HttpService) { }
 
   ngOnInit(): void {
-    let popularCurrencies = Object.keys(this.mostPopularCurrencies).filter((item) => {
-      return isNaN(Number(item));
-    });
-
-    this.dataSharingService.getExchangeFormValueChange().subscribe(formValue => {
+    
+    const sub = this.dataSharingService.getConversionRequestSentNotification().subscribe(formValue => {
       if (formValue && formValue.amount && formValue.amount > 0) {
+        let popularCurrencies = Object.keys(this.mostPopularCurrencies).filter((item) => {
+          return isNaN(Number(item));
+        });
         const index = popularCurrencies.indexOf(formValue.from);
         if (index > -1) { // only splice array when item is found
           popularCurrencies.splice(index, 1); // 2nd parameter means remove one item only
@@ -53,7 +54,13 @@ export class HomeComponent implements OnInit {
         });
       }
     });
+
+    this.subscriptions.push(sub);
     
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
 }
